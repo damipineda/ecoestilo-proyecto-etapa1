@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-white text-gray-900;
+  }
+}
+
+@layer components {
+  .btn-eco-primary {
+    @apply bg-eco-earth text-white px-6 py-3 rounded-lg font-semibold 
+           transition-all duration-300 hover:bg-eco-forest hover:shadow-lg 
+           transform hover:-translate-y-0.5;
+  }
+  
+  .btn-eco-secondary {
+    @apply border-2 border-eco-forest text-eco-forest px-6 py-3 rounded-lg 
+           font-semibold transition-all duration-300 hover:bg-eco-forest 
+           hover:text-white transform hover:-translate-y-0.5;
+  }
+}
