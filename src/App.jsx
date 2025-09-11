@@ -354,7 +354,7 @@ const CustomizePage = () => {
               </div>
 
               <button className="btn-eco-primary w-full">
-                Añadir al Carrito - $65
+                Añadir al Carrito - Gs 65000
               </button>
             </div>
           </div>
