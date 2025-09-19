@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, createContext, useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import { Menu, X, Leaf, Heart, Users, ShoppingBag, Mail, Phone, MapPin } from 'lucide-react';
+import { Menu, X, Leaf, Heart, Users, ShoppingBag, Mail, Phone, MapPin, Facebook, Instagram, Twitter } from 'lucide-react';
 import './App.css';
 import logo from './assets/ecoestilo_logo.png';
+import CustomAlert from './components/CustomAlert';
+import WhatsappButton from './components/WhatsappButton';
+import BusinessDescription from './components/about/BusinessDescription';
 
 // Shared products data
 const products = [
@@ -39,6 +42,7 @@ const products = [
 // Header Component
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { cart } = useCart();
 
   return (
     <header className="bg-eco-white shadow-md sticky top-0 z-50">
@@ -51,9 +55,21 @@ const Header = () => {
           
           <nav className="hidden md:flex space-x-8">
             <Link to="/" className="text-eco-forest hover:text-eco-earth transition-colors">Inicio</Link>
+            <Link to="/sobre-nosotros" className="text-eco-forest hover:text-eco-earth transition-colors">Sobre Nosotros</Link>
             <Link to="/productos" className="text-eco-forest hover:text-eco-earth transition-colors">Productos</Link>
             <Link to="/personalizar" className="text-eco-forest hover:text-eco-earth transition-colors">Personalizar</Link>
             <Link to="/contacto" className="text-eco-forest hover:text-eco-earth transition-colors">Contacto</Link>
+            <Link to="/carrito" className="text-eco-forest hover:text-eco-earth transition-colors flex items-center">
+              <div className="relative">
+                <ShoppingBag size={18} className="mr-1" />
+                {cart.length > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-eco-earth text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+                    {cart.length}
+                  </span>
+                )}
+              </div>
+              Carrito
+            </Link>
           </nav>
 
           <button
@@ -68,9 +84,21 @@ const Header = () => {
           <nav className="md:hidden mt-4 pb-4">
             <div className="flex flex-col space-y-2">
               <Link to="/" className="text-eco-forest hover:text-eco-earth transition-colors py-2">Inicio</Link>
+              <Link to="/sobre-nosotros" className="text-eco-forest hover:text-eco-earth transition-colors py-2">Sobre Nosotros</Link>
               <Link to="/productos" className="text-eco-forest hover:text-eco-earth transition-colors py-2">Productos</Link>
               <Link to="/personalizar" className="text-eco-forest hover:text-eco-earth transition-colors py-2">Personalizar</Link>
               <Link to="/contacto" className="text-eco-forest hover:text-eco-earth transition-colors py-2">Contacto</Link>
+              <Link to="/carrito" className="text-eco-forest hover:text-eco-earth transition-colors py-2 flex items-center">
+                <div className="relative">
+                  <ShoppingBag size={18} className="mr-2" />
+                  {cart.length > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-eco-earth text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+                      {cart.length}
+                    </span>
+                  )}
+                </div>
+                Carrito
+              </Link>
             </div>
           </nav>
         )}
@@ -81,6 +109,8 @@ const Header = () => {
 
 // Home Page Component
 const HomePage = () => {
+  const { addToCart } = useCart();
+  
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -173,11 +203,20 @@ const HomePage = () => {
                 <div className="p-6">
                   <h3 className="text-xl font-bold text-eco-forest mb-2">{product.name}</h3>
                   <p className="text-eco-forest mb-4">{product.description}</p>
-                  <div className="flex justify-between items-center">
-                    <span className="text-2xl font-bold text-eco-earth">{product.price}</span>
-                    <Link to="/personalizar" className="btn-eco-primary text-sm">
-                      Personalizar
-                    </Link>
+                  <div className="flex flex-col">
+                    <span className="text-2xl font-bold text-eco-earth mb-3 text-center">{product.price}</span>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button 
+                        onClick={() => addToCart(product)} 
+                        className="btn-eco-primary text-sm w-full flex items-center justify-center"
+                      >
+                        <ShoppingBag size={16} className="mr-1" />
+                        Comprar
+                      </button>
+                      <Link to="/personalizar" className="btn-eco-secondary text-sm w-full flex items-center justify-center">
+                        Personalizar
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -212,6 +251,7 @@ const HomePage = () => {
 
 // Products Page Component
 const ProductsPage = () => {
+  const { addToCart } = useCart();
   const products = [
     {
       id: 1,
@@ -260,11 +300,20 @@ const ProductsPage = () => {
               <div className="p-6">
                 <h3 className="text-xl font-bold text-eco-forest mb-2">{product.name}</h3>
                 <p className="text-eco-forest mb-4">{product.description}</p>
-                <div className="flex justify-between items-center">
-                  <span className="text-2xl font-bold text-eco-earth">{product.price}</span>
-                  <Link to="/personalizar" className="btn-eco-primary text-sm">
-                    Personalizar
-                  </Link>
+                <div className="flex flex-col">
+                  <span className="text-2xl font-bold text-eco-earth mb-3 text-center">{product.price}</span>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button 
+                      onClick={() => addToCart(product)} 
+                      className="btn-eco-primary text-sm w-full flex items-center justify-center"
+                    >
+                      <ShoppingBag size={16} className="mr-1" />
+                      Comprar
+                    </button>
+                    <Link to="/personalizar" className="btn-eco-secondary text-sm w-full flex items-center justify-center">
+                      Personalizar
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
@@ -277,9 +326,59 @@ const ProductsPage = () => {
 
 // Customize Page Component
 const CustomizePage = () => {
+  const { addToCart } = useCart();
   const [selectedProduct, setSelectedProduct] = useState('camiseta');
   const [selectedColor, setSelectedColor] = useState('verde');
   const [selectedSize, setSelectedSize] = useState('M');
+  const [details, setDetails] = useState('');
+
+  // Mapa de productos disponible en todo el componente (usado para precio dinámico)
+  const productMap = {
+    'camiseta': { id: 1, name: 'Camiseta Orgánica Personalizada', price: 'Gs 45000', image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800" },
+    'sudadera': { id: 2, name: 'Sudadera Eco-Friendly', price: 'Gs 75000', image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=800" },
+    'pantalon': { id: 3, name: 'Pantalón Sostenible', price: 'Gs 85000', image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=800" },
+    'vestido': { id: 4, name: 'Vestido Artesanal', price: 'Gs 95000', image: "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=800" }
+  };
+
+  // Mapa de clases para colorear el icono en la vista previa según la selección
+  // Mapa de colores (hex) para colorear el icono en la vista previa según la selección
+  const colorHexMap = {
+    verde: '#8FBF9A', // aproximado eco-sage
+    azul: '#60A5FA',  // azul-400
+    tierra: '#C1763C', // aproximado eco-earth
+    beige: '#F3F0D9'   // aproximado eco-beige
+  };
+
+  // Ajustes de precio según talla (puedes ajustar los valores)
+  const sizePriceDelta = {
+    XS: -5000,
+    S: 0,
+    M: 0,
+    L: 5000,
+    XL: 7000
+  };
+
+  // Obtener el precio base numérico (extrae dígitos) y calcular el precio final
+  const rawBasePrice = productMap[selectedProduct]?.price || '';
+  const baseNumeric = rawBasePrice ? parseInt(rawBasePrice.replace(/\D/g, ''), 10) : 0;
+  const finalNumericPrice = baseNumeric + (sizePriceDelta[selectedSize] || 0);
+  const finalPriceStr = finalNumericPrice > 0 ? `Gs ${finalNumericPrice}` : '';
+
+  const handleAddToCart = (priceStr) => {
+    const baseProduct = productMap[selectedProduct];
+    const customProduct = {
+      ...baseProduct,
+      id: Date.now(), // Unique ID para productos personalizados
+      price: priceStr || baseProduct.price,
+      description: `${baseProduct.name} - Color: ${selectedColor}, Talla: ${selectedSize}${details ? ', Detalles: ' + details : ''}`,
+      color: selectedColor,
+      size: selectedSize,
+      details: details,
+      customized: true
+    };
+
+    addToCart(customProduct);
+  };
 
   return (
     <div className="min-h-screen py-20 bg-eco-white">
@@ -350,11 +449,16 @@ const CustomizePage = () => {
                 <textarea 
                   placeholder="Describe cualquier detalle especial que desees (bordados, estampados, etc.)"
                   className="w-full p-3 border border-eco-sage rounded-lg focus:outline-none focus:ring-2 focus:ring-eco-earth h-24"
+                  value={details}
+                  onChange={(e) => setDetails(e.target.value)}
                 />
               </div>
 
-              <button className="btn-eco-primary w-full">
-                Añadir al Carrito - Gs 65000
+              <button 
+                onClick={() => handleAddToCart(finalPriceStr)}
+                className="btn-eco-primary w-full"
+              >
+                Añadir al Carrito - {finalPriceStr}
               </button>
             </div>
           </div>
@@ -363,7 +467,7 @@ const CustomizePage = () => {
             <h2 className="text-2xl font-bold text-eco-forest mb-6">Vista Previa</h2>
             <div className="bg-eco-beige rounded-lg p-8 text-center">
               <div className="bg-eco-white rounded-lg p-8 mb-4">
-                <ShoppingBag size={64} className="mx-auto text-eco-sage mb-4" />
+                <ShoppingBag size={64} className="mx-auto mb-4" style={{ color: colorHexMap[selectedColor] || colorHexMap.verde }} />
                 <h3 className="text-xl font-bold text-eco-forest mb-2">
                   {selectedProduct.charAt(0).toUpperCase() + selectedProduct.slice(1)}
                 </h3>
@@ -471,9 +575,11 @@ const Footer = () => {
             <h3 className="text-lg font-bold mb-4">Enlaces</h3>
             <ul className="space-y-2">
               <li><Link to="/" className="text-gray-300 hover:text-white transition-colors">Inicio</Link></li>
+              <li><Link to="/sobre-nosotros" className="text-gray-300 hover:text-white transition-colors">Sobre Nosotros</Link></li>
               <li><Link to="/productos" className="text-gray-300 hover:text-white transition-colors">Productos</Link></li>
               <li><Link to="/personalizar" className="text-gray-300 hover:text-white transition-colors">Personalizar</Link></li>
               <li><Link to="/contacto" className="text-gray-300 hover:text-white transition-colors">Contacto</Link></li>
+              <li><Link to="/carrito" className="text-gray-300 hover:text-white transition-colors">Carrito</Link></li>
             </ul>
           </div>
           <div>
@@ -487,7 +593,18 @@ const Footer = () => {
           </div>
           <div>
             <h3 className="text-lg font-bold mb-4">Síguenos</h3>
-            <p className="text-gray-300">
+            <div className="flex space-x-4">
+              <a href="#" className="text-white hover:text-eco-earth transition-colors">
+                <Facebook size={24} />
+              </a>
+              <a href="#" className="text-white hover:text-eco-earth transition-colors">
+                <Instagram size={24} />
+              </a>
+              <a href="#" className="text-white hover:text-eco-earth transition-colors">
+                <Twitter size={24} />
+              </a>
+            </div>
+            <p className="mt-4 text-gray-300">
               Mantente al día con nuestras últimas creaciones y noticias sobre sostenibilidad.
             </p>
           </div>
@@ -500,23 +617,199 @@ const Footer = () => {
   );
 };
 
+// Cart Context
+const CartContext = createContext();
+
+export const useCart = () => useContext(CartContext);
+
+export const CartProvider = ({ children }) => {
+  const [cart, setCart] = useState([]);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+
+  const addToCart = (product) => {
+    setCart((prevCart) => {
+      setAlertMessage(`${product.name} añadido al carrito`);
+      setShowAlert(true);
+      return [...prevCart, product];
+    });
+  };
+
+  const removeFromCart = (productId) => {
+    setCart((prevCart) => prevCart.filter((item) => item.id !== productId));
+  };
+
+  const clearCart = () => {
+    setCart([]);
+  };
+
+  return (
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart }}>
+      <CustomAlert 
+        message={alertMessage} 
+        isVisible={showAlert} 
+        onClose={() => setShowAlert(false)} 
+      />
+      {children}
+    </CartContext.Provider>
+  );
+};
+
+// Purchase Form Component
+const PurchaseForm = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    address: '',
+    phone: '',
+  });
+  const [showAlert, setShowAlert] = useState(false);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
+  const { clearCart } = useCart();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('Purchase Data:', formData);
+    setShowAlert(true);
+    clearCart();
+    setFormData({
+      name: '',
+      email: '',
+      address: '',
+      phone: '',
+    });
+  };
+
+  return (
+    <>
+      <CustomAlert 
+        message="¡Compra realizada con éxito!" 
+        isVisible={showAlert} 
+        onClose={() => setShowAlert(false)} 
+      />
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-eco-forest font-semibold mb-2">Nombre</label>
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            className="w-full p-3 border border-eco-sage rounded-lg focus:outline-none focus:ring-2 focus:ring-eco-earth"
+            required
+          />
+      </div>
+      <div>
+        <label className="block text-eco-forest font-semibold mb-2">Email</label>
+        <input
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          className="w-full p-3 border border-eco-sage rounded-lg focus:outline-none focus:ring-2 focus:ring-eco-earth"
+          required
+        />
+      </div>
+      <div>
+        <label className="block text-eco-forest font-semibold mb-2">Dirección</label>
+        <input
+          type="text"
+          name="address"
+          value={formData.address}
+          onChange={handleChange}
+          className="w-full p-3 border border-eco-sage rounded-lg focus:outline-none focus:ring-2 focus:ring-eco-earth"
+          required
+        />
+      </div>
+      <div>
+        <label className="block text-eco-forest font-semibold mb-2">Teléfono</label>
+        <input
+          type="tel"
+          name="phone"
+          value={formData.phone}
+          onChange={handleChange}
+          className="w-full p-3 border border-eco-sage rounded-lg focus:outline-none focus:ring-2 focus:ring-eco-earth"
+          required
+        />
+      </div>
+      <button type="submit" className="btn-eco-primary w-full">
+        Realizar Compra
+      </button>
+    </form>
+    </>
+
+  );
+};
+
+// Cart Page Component
+const CartPage = () => {
+  const { cart, removeFromCart, clearCart } = useCart();
+
+  return (
+    <div className="min-h-screen py-20 bg-eco-white">
+      <div className="container mx-auto px-4">
+        <h1 className="text-4xl font-bold text-center text-eco-forest mb-12">Carrito de Compras</h1>
+        {cart.length === 0 ? (
+          <p className="text-center text-eco-forest">Tu carrito está vacío.</p>
+        ) : (
+          <div className="space-y-8">
+            {cart.map((item) => (
+              <div key={item.id} className="bg-eco-beige rounded-lg p-6 shadow-lg">
+                <h3 className="text-xl font-bold text-eco-forest mb-2">{item.name}</h3>
+                <p className="text-eco-forest mb-4">{item.description}</p>
+                <div className="flex justify-between items-center">
+                  <span className="text-2xl font-bold text-eco-earth">{item.price}</span>
+                  <button
+                    onClick={() => removeFromCart(item.id)}
+                    className="btn-eco-secondary text-sm"
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              </div>
+            ))}
+            <div className="text-center">
+              <button onClick={clearCart} className="btn-eco-secondary inline-block">
+                Vaciar Carrito
+              </button>
+            </div>
+          </div>
+        )}
+        <div className="mt-12">
+          <PurchaseForm />
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Main App Component
 function App() {
   return (
-    <Router>
-      <div className="App">
-        <Header />
-        <main>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/productos" element={<ProductsPage />} />
-            <Route path="/personalizar" element={<CustomizePage />} />
-            <Route path="/contacto" element={<ContactPage />} />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
-    </Router>
+    <CartProvider>
+      <Router>
+        <div className="App">
+          <Header />
+          <main>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/productos" element={<ProductsPage />} />
+              <Route path="/personalizar" element={<CustomizePage />} />
+              <Route path="/contacto" element={<ContactPage />} />
+              <Route path="/carrito" element={<CartPage />} />
+              <Route path="/sobre-nosotros" element={<BusinessDescription />} />
+            </Routes>
+          </main>
+          <Footer />
+          <WhatsappButton />
+        </div>
+      </Router>
+    </CartProvider>
   );
 }
 
